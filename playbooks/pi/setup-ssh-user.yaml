@@ -1,0 +1,34 @@
+--- 
+- name: Create User 'christianclarke' on Pi
+  hosts: all
+  become: yes
+  remote_user: pi
+  vars:
+    password: "{{ lookup('file', '../artifacts/passwdfile') }}"
+
+  tasks:
+    - name: Add the user 'christianclarke'
+      ansible.builtin.user:
+        name: christianclarke
+        password: "{{ password | password_hash('sha512') }}"
+        shell: /bin/bash
+        groups: adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,netdev,spi,i2c,gpio,lpadmin
+        append: yes
+
+    - name: Create the SSH Directory
+      ansible.builtin.file:
+        path: /home/christianclarke/.ssh
+        state: directory
+        mode: '0755'
+
+    - name: Ensure the Auth Key file exists, create if not
+      copy:
+        content: ""
+        dest: /home/christianclarke/.ssh/authorized_keys
+        force: no
+        mode: 0755
+
+    - name: Add Public key into Auth File for 'christianclarke'
+      lineinfile:
+        path: /home/christianclarke/.ssh/authorized_keys
+        line: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwkpedxGiad1bUAxhTvXfWlhyj+PadDb2i9kdAWNuhGDY6t8+koGx8b14leFapU/4x0/qfAwX2tbuD1ao4AkoCU0BicUlZxMB8cmhvijNA7WVX39cZZ2GX3voblVP5RSJLoceTiskWwjvTqHokk7Whu2U3q+WXG9YydxIwPShj30koY9jeka8W3Dxd2FDb5TdXXqtUayQ1kUmXLx5fFzo1MdHM2h+hZ92S7QE5haSvqQFe0Nt1em4KRhEVkF32TLU6lYinJV9rD1YbKUjBedXhgu9eakwwm7gjnZs9VXC8iavfaI+kr/5M7B9YUj5Csy4qrmgfWOmT9jIY0H2RHXfSBJAISrXykjndadieKX4lP6H76X1vhSbw2DNui+nBUPKL2Q+5KLc0/kleW0yZJRVq5OOiwJcLatvoah2B8bydQYjlbEk+CrCOEgoQyCl1gR9H1Eq0Cl44inKlXjOpkwAoz+gAxOdUgIt7uITF6mxgNNp0nleu7rGZiAphXvhlUq0='
