@@ -1,0 +1,23 @@
+---
+- name: Create a New hostname for the Pi
+  hosts: all
+  become: yes
+  remote_user: christianclarke
+  vars:
+    hostname: "raspberry-pi-"
+
+  tasks:
+    - name: Generate Random Number
+      set_fact:
+          random_number: "{{ 100 | random }}"
+    
+    - name: Print the random number
+      ansible.builtin.debug:
+        msg: Generated Hostname "{{ hostname }}{{ random_number }}"
+
+    - name: Set a hostname using SystemD
+      ansible.builtin.hostname:
+        name: "{{ hostname }}{{ random_number }}"
+
+    - name: Unconditionally reboot the machine with all defaults
+      reboot:
