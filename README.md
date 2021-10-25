@@ -1,9 +1,5 @@
 # ansible-playbooks
 
-## Need to create a file: playbooks/artifacts/passwdfile with the password you want the Pi to have your your account
-
-'''
-mkdir playbooks/artifacts
-touch passwdfile
-echo "password" >> playbooks/artifacts/passwdfile
-'''
+1. Changes the hostname, will ask for sudo password. Uses account "Christian Clarke"
+    >ansible-playbook rename-pi-host.yaml -i 192.168.1.94, --extra-vars "hostname=picohost-" --private-key "~/Documents/home-key" --ask-become-pass
+2.
